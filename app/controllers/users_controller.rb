@@ -7,6 +7,10 @@ class UsersController < ApplicationController
   before_action :transform_categories, only: %i[register update]
   before_action :set_dropdowns, only: %i[registration edit]
 
+  CATEGORIES = { 'Participant' => 'participant',
+                 'Event Organizer' => 'organizer',
+                 'Maintainer' => 'maintainer' }
+
   # render current user profile
   def show
     TryUserTransitionService.call(@current_user)
@@ -56,17 +60,20 @@ class UsersController < ApplicationController
 
   def set_dropdowns
     @emails = UserEmailService.new(@current_user).emails
-    @categories = { 'Participant' => 'participant',
-                    'Event Organizer' => 'organizer',
-                    'Maintainer' => 'maintainer' }
+    @categories = CATEGORIES
   end
 
   def transform_categories
-    return unless params[:user].present? && params[:user][:category].present?
+    return unless params[:user].present?
 
-    params[:user][:category] = params[:user][:category]
-                               .reject(&:empty?)
-                               .join(',')
+    params[:user][:category] = []
+    CATEGORIES.values.map do |category|
+      key = "category_#{category}"
+      val = params[:user][key]
+      params[:user].delete key
+      params[:user][:category].append category if val == '1'
+    end
+    params[:user][:category] = params[:user][:category].join(',')
   end
 
   def params_for_registration

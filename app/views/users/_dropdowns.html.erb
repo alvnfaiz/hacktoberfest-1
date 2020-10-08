@@ -14,17 +14,17 @@
 
   <div class="field">
     <div class="control">
-      <div class="select is-multiple">
-        <%= f.select :category, @categories,
-                     {
-                         include_blank: 'Select all roles that apply to you...',
-                         selected: (u.category || '').split(',')
-                     },
-                     {
-                         :required => true,
-                         :multiple => true
-                     } %>
-      </div>
+      <% categories_selected = (u.category || '').split(',') %>
+      <% @categories.map do |key, value| %>
+        <div class="field">
+          <div class="control">
+            <label class="checkbox">
+              <%= f.check_box "category_#{value}", :class => 'check-style', :checked => categories_selected.include?(value) %>
+              <%= key %>
+            </label>
+          </div>
+        </div>
+      <% end %>
     </div>
   </div>
 
