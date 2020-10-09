@@ -9,7 +9,7 @@ class UsersController < ApplicationController
 
   CATEGORIES = { 'Participant' => 'participant',
                  'Event Organizer' => 'organizer',
-                 'Maintainer' => 'maintainer' }
+                 'Maintainer' => 'maintainer' }.freeze
 
   # render current user profile
   def show
@@ -64,7 +64,7 @@ class UsersController < ApplicationController
   end
 
   def transform_categories
-    return unless params[:user].present?
+    return if params[:user].blank?
 
     params[:user][:category] = []
     CATEGORIES.values.map do |category|
